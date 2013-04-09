@@ -55,7 +55,6 @@ class SemanticPoseHandler(object):
         instance.expected_ttl = rospy.Duration(1)
         instance.tags = copy.deepcopy(self.tags)
         instance.tags.append(name)
-        print str(instance.tags)
         instance.source.origin = self.concert_name
         instance.source.creator = rospy.get_name()
         

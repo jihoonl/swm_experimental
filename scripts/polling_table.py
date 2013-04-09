@@ -6,6 +6,7 @@ import actionlib
 from worldlib.msg import *
 from world_msgs.msg import *
 from geometry_msgs.msg import *
+from swm_experimental.msg import *
 
 class SemanticPoseHandler(object):
     def __init__(self):
@@ -23,14 +24,41 @@ class SemanticPoseHandler(object):
         rospy.loginfo('World Model Handler Ready')
 
         self._publisher = {}
-        self._publisher['polling_table'] = rospy.Publisher('polling_table',WorldObjectInstance)
+        self._publisher['poses_only'] = rospy.Publisher('poses_only',PoseArray, latch=True)
+        self._publisher['table_pose_lists'] = rospy.Publisher('table_pose_lists',TablePoseList,latch=True)
+
+    def parse(self,instances):
+
+        posearray = PoseArray()
+        posearray.header.frame_id = '/map'
+        posearray.header.stamp = rospy.Time.now()
+    
+        table_pose_list = TablePoseList()
+
+        for i in instances:
+            pose = i.pose.pose.pose
+            posearray.poses.append(pose)
+
+            table = TablePose()
+            table.name = i.name
+            table.pose_stamped.header = i.pose.header
+            table.pose_stamped.pose = i.pose.pose.pose
+            table_pose_list.tables.append(table)
+    
+        return posearray, table_pose_list
+                   
 
     def spin(self):
         
         while not rospy.is_shutdown():
             self._action['woits'].send_goal_and_wait(WorldObjectInstanceTagSearchGoal(self.tags))
             resp = self._action['woits'].get_result()
-            print str(resp)
+            
+            posearray, table_pose_lists = self.parse(resp.instances)
+
+            self._publisher['poses_only'].publish(posearray)
+            self._publisher['table_pose_lists'].publish(table_pose_lists)
+
             rospy.sleep(1)
 
 

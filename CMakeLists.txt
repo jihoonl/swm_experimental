@@ -11,6 +11,14 @@ find_package(catkin REQUIRED geometry_msgs message_generation)
 ## See http://ros.org/doc/groovy/api/catkin/html/user_guide/setup_dot_py.html
 # catkin_python_setup()
 
+## Generate services in the 'msg' folder
+add_message_files(
+  DIRECTORY msg
+  FILES
+  TablePose.msg
+  TablePoseList.msg
+)
+
 ## Generate services in the 'srv' folder
 add_service_files(
   DIRECTORY srv
