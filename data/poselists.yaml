@@ -1,0 +1,49 @@
+table:
+  -  
+    name: table1
+    frame_id: map
+    pose:
+    - 
+      posittion:
+      -
+        x: 10
+        y: 0
+        z: 0
+      orientation:
+      - 
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+  -
+    name: table2
+    frame_id: map
+    pose:
+    - 
+      posittion:
+      -
+        x: 10
+        y: 0
+        z: 0
+      orientation:
+      - 
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+  -
+    name: table3
+    frame_id: map
+    pose:
+    - 
+      posittion:
+      -
+        x: 10
+        y: 0
+        z: 0
+      orientation:
+      - 
+        x: 0
+        y: 0
+        z: 0
+        w: 1

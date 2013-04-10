@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="swm_experimental" type="pose_loader.py" name="pose_loader">
+        <param name="filename" type="string" value="$(find swm_experimental)/data/poselists.yaml" />
+    </node>
+</launch>
