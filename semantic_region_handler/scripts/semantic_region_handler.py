@@ -14,7 +14,7 @@ class SemanticRegionHandler(object):
         
         self.spatial_world_model_ns = '/spatial_world_model'
         self.concert_name = "concert"
-        self.tags = ['landmarks','concert']
+        self.tags = [self.concert_name,'table']
 
         rospy.loginfo('Connecting to World Model handler...')
         # Setting actions to spaital world model handler
