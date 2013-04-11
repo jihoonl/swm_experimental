@@ -38,6 +38,7 @@ class TablePoller(object):
         # Markers
         marker_list = MarkerArray()
 
+        marker_id = 1
         for i in instances:
             table = TablePose()
             table.name = i.name
@@ -46,12 +47,13 @@ class TablePoller(object):
             table_pose_list.tables.append(table)
 
             marker = Marker()
+            marker.id = marker_id
             marker.header = i.pose.header
             marker.header.stamp = rospy.Time.now()
             marker.type = Marker.SPHERE
             marker.ns = self.concert_name
             marker.action = Marker.ADD
-            marker.lifetime = rospy.Duration.from_sec(60)
+            marker.lifetime = rospy.Duration.from_sec(1)
             marker.pose = i.pose.pose.pose
             marker.scale.x = table.region.radius
             marker.scale.y = table.region.radius
@@ -62,6 +64,8 @@ class TablePoller(object):
             marker.color.a = 1.0
 
             marker_list.markers.append(marker)
+
+            marker_id = marker_id + 1
     
         return marker_list, table_pose_list
 

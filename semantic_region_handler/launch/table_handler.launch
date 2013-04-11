@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="semantic_region_handler" name="table_poller" type="table_poller.py"/>
+    <node pkg="semantic_region_handler" name="circle_region_handler" type="circle_region_handler.py"/>
+</launch>
