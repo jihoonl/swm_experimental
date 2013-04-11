@@ -3,3 +3,4 @@ geometry_msgs/PoseStamped pose_stamped
 float32 radius
 ---
 string result
+int32 instance_id
