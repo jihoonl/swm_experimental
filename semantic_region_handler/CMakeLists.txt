@@ -14,6 +14,8 @@ add_message_files(
   DIRECTORY msg
   FILES
   Region.msg
+  TablePose.msg
+  TablePoseList.msg
 )
 
 ## Generate services in the 'srv' folder

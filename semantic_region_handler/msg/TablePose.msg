@@ -1,6 +1,3 @@
 string name
----
-int32 instance_id
-int32 description_id
 geometry_msgs/PoseWithCovarianceStamped pose_cov_stamped
-float32 radius
+semantic_region_handler/Region region

@@ -9,10 +9,12 @@ from worldlib.msg import *
 from world_msgs.msg import *
 from geometry_msgs.msg import *
 from semantic_region_handler.srv import *
+from semantic_region_handler.msg import *
 from rospy_message_converter import json_message_converter
 
 class SemanticRegionHandler(object):
     def __init__(self,spatial_world_model_ns,concert_name,instance_tags,description_tags,descriptor_ref):
+        self.data_type = 'semantic_region_handler/Region'
         
         self.spatial_world_model_ns = spatial_world_model_ns
         self.concert_name = concert_name
@@ -52,17 +54,18 @@ class SemanticRegionHandler(object):
             description_id = self.create_radius_world_description(req.radius)
 
         instance_id = self.add_radius_region_instance(req.name,req.pose_stamped.header,req.pose_stamped.pose,description_id)
-        return AddSemanticRegionResponse(instance_id)
+        return AddSemanticRegionResponse("Whoola",instance_id)
 
 
-    def get_radius_descriptor(radius):
+    def get_radius_description(self,radius):
         # Check whether this raiuus descriptor is already in the database
-        self._action['cwod'].send_goal_and_wait(WorldObjectInstanceTagSearchGoal(self.description_tags))
-        resp = self._action['cwod'].get_result()
+        goal = WorldObjectDescriptionTagSearchGoal(self.description_tags)
+        self._action['wodts'].send_goal_and_wait(goal)
+        resp = self._action['wodts'].get_result()
 
         description_id = None
         for d in resp.descriptions: 
-            data = json_message_converter.convert_json_to_ros_message('semantic_region_handler/Region',d.descriptors[0].data)
+            data = json_message_converter.convert_json_to_ros_message(self.data_type,d.descriptors[0].data)
             if data.radius == radius:
                 description_id = d.description_id
                 break
@@ -75,6 +78,7 @@ class SemanticRegionHandler(object):
         description = WorldObjectDescription()
         description.name = str(radius)
         description.tags = copy.deepcopy(self.description_tags)
+        description.tags.append(description.name)
         description.descriptors.append(radius_descriptor)
 
         self._action['cwod'].send_goal_and_wait(CreateWorldObjectDescriptionGoal(description))
@@ -86,7 +90,7 @@ class SemanticRegionHandler(object):
         region = Region(radius)
 
         d = Descriptor()
-        d.type = '/semantic_region_handler/Region'
+        d.type = self.data_type
         d.data = json_message_converter.convert_ros_message_to_json(region)
         d.ref = self.descriptor_ref
         d.tags = self.description_tags
@@ -102,12 +106,13 @@ class SemanticRegionHandler(object):
         instance.source.origin = self.concert_name
         instance.source.creator = rospy.get_name()
         instance.tags = copy.deepcopy(self.instance_tags)
+        instance.tags.append(instance.name)
 
         self._action['cwoi'].send_goal_and_wait(CreateWorldObjectInstanceGoal(instance))
         result = self._action['cwoi'].get_result()
         return result.instance_id
 
-    def create_pose_cov(self,pose,header):
+    def create_pose_cov(self,header,pose):
         pcs = PoseWithCovarianceStamped()
         pcs.pose.pose = pose
         pcs.header = header
@@ -130,15 +135,29 @@ class SemanticRegionHandler(object):
         self._action['woits'].send_goal_and_wait(WorldObjectInstanceTagSearchGoal(self.instance_tags))
         resp = self._action['woits'].get_result()
         
-        print str(resp)
+        # Get the correct instance
+        instances = [i for i in resp.instances if i.name == req.name]
 
-        instance = None
-        for i in resp.instances:
-            if i.name == req.name:
-                instances = i
-                break
+        if len(instances) > 1:
+            rospy.logwarn("There is  more than one instance with current name[%s]. Assigning the first one"%req.name)
+        instance = instances[0]
+        
+        # search WorldObjectDescription 
+        description_tags = copy.deepcopy(self.description_tags)
+        self._action['wodts'].send_goal_and_wait(WorldObjectDescriptionTagSearchGoal(description_tags))
+        description_resp = self._action['wodts'].get_result()
+        descriptions = [d for d in description_resp.descriptions if d.description_id == instance.description_id]
+
+        if len(descriptions) > 1:
+            rospy.logwarn("There is  more than one descriptions with current id[%s]. Assigning the first one"%instance.description_id)
+        description = descriptions[0]
+
+        # parsing data in the descriptor
+        message = json_message_converter.convert_json_to_ros_message(description.descriptors[0].type, description.descriptors[0].data)
+        radius = message.radius
+
+        return GetSemanticRegionResponse(instance.instance_id,description.description_id,instance.pose,radius)
                 
-        return GetSemanticRegionResponse(instances.pose_stamped,instances.radius)
 
     def spin(self):
         rospy.spin()

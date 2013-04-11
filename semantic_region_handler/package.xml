@@ -24,4 +24,5 @@
   <run_depend>worldlib</run_depend>
   <run_depend>message_runtime</run_depend>
   <run_depend>rospy_message_converter</run_depend>
+  <run_depend>visualization_msgs</run_depend>
 </package>
