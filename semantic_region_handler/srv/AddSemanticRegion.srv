@@ -1,6 +1,0 @@
-string name
-geometry_msgs/PoseStamped pose_stamped
-Region region
----
-string result
-int32 instance_id
