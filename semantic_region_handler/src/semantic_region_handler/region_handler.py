@@ -13,7 +13,7 @@ from semantic_region_handler.msg import *
 from rospy_message_converter import json_message_converter
 
 class SemanticRegionHandler(object):
-    def __init__(self,spatial_world_model_ns,concert_name,instance_tags,description_tags,descriptor_ref,data_comparision):
+    def __init__(self,spatial_world_model_ns,concert_name,instance_tags,description_tags,descriptor_ref,data_comparision,srv_name):
         self.data_type = 'semantic_region_handler/Region'
         self.data_comparision = data_comparision
         
@@ -42,9 +42,9 @@ class SemanticRegionHandler(object):
         rospy.loginfo('World Model Handler Ready')
 
         self._service = {}
-        self._service['add_semantic_region'] = rospy.Service('add_semantic_region',AddSemanticRegion,self.process_add_semantic_region)
-        self._service['get_semantic_region'] = rospy.Service('get_semantic_region',GetSemanticRegion,self.process_get_semantic_region)
-        self._service['remove_semantic_region'] = rospy.Service('remove_semantic_region',RemoveSemanticRegion,self.process_remove_semantic_region)
+        self._service['add_semantic_region'] = rospy.Service(srv_name['add'],AddSemanticRegion,self.process_add_semantic_region)
+        self._service['get_semantic_region'] = rospy.Service(srv_name['get'],GetSemanticRegion,self.process_get_semantic_region)
+        self._service['remove_semantic_region'] = rospy.Service(srv_name['remove'],RemoveSemanticRegion,self.process_remove_semantic_region)
 
     def process_add_semantic_region(self,req):
         # Search database to check whether it exists already

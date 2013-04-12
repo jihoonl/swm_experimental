@@ -18,7 +18,12 @@ if __name__ == '__main__':
     description_tags = [concert_name,'table','landmarks']
     descriptor_ref = json.dumps({'type':'landmarks'}) 
 
-    sph = SemanticRegionHandler(spatial_world_model_ns,concert_name,instance_tags,description_tags,descriptor_ref,marker_comparison)
+    srv_name = {}
+    srv_name['add'] = 'add_ar_marker'
+    srv_name['get'] = 'get_ar_marker'
+    srv_name['remove'] = 'remove_ar_marker'
+
+    sph = SemanticRegionHandler(spatial_world_model_ns,concert_name,instance_tags,description_tags,descriptor_ref,marker_comparison,srv_name)
     rospy.loginfo('Initialized')
     sph.spin()
     rospy.loginfo('Bye Bye')

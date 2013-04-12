@@ -19,7 +19,12 @@ if __name__ == '__main__':
     description_tags = [concert_name,'table','radius']
     descriptor_ref = json.dumps({'type':'semantic_radius'}) 
 
-    sph = SemanticRegionHandler(spatial_world_model_ns,concert_name,instance_tags,description_tags,descriptor_ref,radius_compare)
+    srv_name = {}
+    srv_name['add'] = 'add_table_region'
+    srv_name['get'] = 'get_table_region'
+    srv_name['remove'] = 'remove_table_region'
+
+    sph = SemanticRegionHandler(spatial_world_model_ns,concert_name,instance_tags,description_tags,descriptor_ref,radius_compare,srv_name)
     rospy.loginfo('Initialized')
     sph.spin()
     rospy.loginfo('Bye Bye')

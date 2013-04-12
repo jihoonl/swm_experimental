@@ -15,7 +15,7 @@ class PoseLoader(object):
         self.filename = rospy.get_param('~filename')
 
         self.service = {}
-        self.service['add_semantic_region'] = rospy.ServiceProxy('add_semantic_region',AddSemanticRegion)
+        self.service['add_table_region'] = rospy.ServiceProxy('add_table_region',AddSemanticRegion)
 
     def load_file(self,filename):
         pose_yaml = None 
@@ -32,7 +32,7 @@ class PoseLoader(object):
         req.pose_stamped.pose = message_converter.convert_dictionary_to_ros_message('geometry_msgs/Pose',table['pose'])
         req.pose_stamped.header.frame_id = table['frame_id']
         req.region.radius = float(table['radius'])
-        resp = self.service['add_semantic_region'](req)
+        resp = self.service['add_table_region'](req)
 
         rospy.loginfo("%s is inserted as %s"%(table['name'],resp.instance_id))
 
