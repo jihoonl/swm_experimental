@@ -1,7 +1,8 @@
 -  
-  name: table1
+  name: landmark1
   frame_id: map
-  radius: 0.5
+  id: 1
+  confidence: 100
   pose:
       position:
           x: 1
@@ -14,9 +15,10 @@
           w: 1
   
 -
-  name: table2
+  name: landmark2 
   frame_id: map
-  radius: 0.5
+  id: 2
+  confidence: 100
   pose:
     position:
       x: 5
@@ -28,9 +30,10 @@
       z: 0
       w: 1
 -
-  name: table3
+  name: landmark3 
   frame_id: map
-  radius: 0.5
+  id: 3
+  confidence: 100
   pose:
     position:
       x: 3

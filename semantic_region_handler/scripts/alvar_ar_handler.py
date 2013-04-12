@@ -7,7 +7,7 @@ from semantic_region_handler import *
 from ar_track_alvar.msg import *
 
 def marker_comparison(a,b):
-    return a.id == b.id
+    return a.marker.id == b.marker.id
 
 if __name__ == '__main__':
     rospy.init_node('alvar_ar_handler')
