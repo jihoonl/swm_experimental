@@ -31,7 +31,7 @@ class PoseLoader(object):
 
         req.pose_stamped.pose = message_converter.convert_dictionary_to_ros_message('geometry_msgs/Pose',table['pose'])
         req.pose_stamped.header.frame_id = table['frame_id']
-        req.radius = float(table['radius'])
+        req.region.radius = float(table['radius'])
         resp = self.service['add_semantic_region'](req)
 
         rospy.loginfo("%s is inserted as %s"%(table['name'],resp.instance_id))

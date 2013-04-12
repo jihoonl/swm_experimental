@@ -13,8 +13,9 @@ from semantic_region_handler.msg import *
 from rospy_message_converter import json_message_converter
 
 class SemanticRegionHandler(object):
-    def __init__(self,spatial_world_model_ns,concert_name,instance_tags,description_tags,descriptor_ref):
+    def __init__(self,spatial_world_model_ns,concert_name,instance_tags,description_tags,descriptor_ref,data_comparision):
         self.data_type = 'semantic_region_handler/Region'
+        self.data_comparision = data_comparision
         
         self.spatial_world_model_ns = spatial_world_model_ns
         self.concert_name = concert_name
@@ -47,17 +48,17 @@ class SemanticRegionHandler(object):
 
     def process_add_semantic_region(self,req):
         # Search database to check whether it exists already
-        description_id = self.get_radius_description(req.radius)
+        description_id = self.get_region_description(req.region)
 
         # if no matched description
         if description_id == None:
-            description_id = self.create_radius_world_description(req.radius)
+            description_id = self.create_region_world_description(req.region)
 
-        instance_id = self.add_radius_region_instance(req.name,req.pose_stamped.header,req.pose_stamped.pose,description_id)
+        instance_id = self.add_region_instance(req.name,req.pose_stamped.header,req.pose_stamped.pose,description_id)
         return AddSemanticRegionResponse("Whoola",instance_id)
 
 
-    def get_radius_description(self,radius):
+    def get_region_description(self,region):
         # Check whether this raiuus descriptor is already in the database
         goal = WorldObjectDescriptionTagSearchGoal(self.description_tags)
         self._action['wodts'].send_goal_and_wait(goal)
@@ -66,29 +67,27 @@ class SemanticRegionHandler(object):
         description_id = None
         for d in resp.descriptions: 
             data = json_message_converter.convert_json_to_ros_message(self.data_type,d.descriptors[0].data)
-            if data.radius == radius:
-                description_id = d.description_id
+    
+            if self.data_comparision(data,region):
                 break
 
         return description_id
         
-    def create_radius_world_description(self,radius):
-        radius_descriptor = self.create_radius_descriptor(radius)
+    def create_region_world_description(self,region):
+        region_descriptor = self.create_region_descriptor(region)
 
         description = WorldObjectDescription()
-        description.name = str(radius)
+#description.name = str(radius)
         description.tags = copy.deepcopy(self.description_tags)
         description.tags.append(description.name)
-        description.descriptors.append(radius_descriptor)
+        description.descriptors.append(region_descriptor)
 
         self._action['cwod'].send_goal_and_wait(CreateWorldObjectDescriptionGoal(description))
         result = self._action['cwod'].get_result()
 
         return result.description_id
 
-    def create_radius_descriptor(self,radius):
-        region = Region(radius)
-
+    def create_region_descriptor(self,region):
         d = Descriptor()
         d.type = self.data_type
         d.data = json_message_converter.convert_ros_message_to_json(region)
@@ -97,7 +96,7 @@ class SemanticRegionHandler(object):
 
         return d
 
-    def add_radius_region_instance(self,name,header,pose,description_id):
+    def add_region_instance(self,name,header,pose,description_id):
         instance = WorldObjectInstance()
         instance.name = name
         instance.description_id = description_id
@@ -154,10 +153,8 @@ class SemanticRegionHandler(object):
 
         # parsing data in the descriptor
         message = json_message_converter.convert_json_to_ros_message(description.descriptors[0].type, description.descriptors[0].data)
-        radius = message.radius
-
-        return GetSemanticRegionResponse(instance.instance_id,description.description_id,instance.pose,radius)
-                
+        region = message
+        return GetSemanticRegionResponse(instance.instance_id,description.description_id,instance.pose,region)
 
     def spin(self):
         rospy.spin()

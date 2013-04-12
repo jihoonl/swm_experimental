@@ -6,7 +6,8 @@ from catkin_pkg.python_setup import generate_distutils_setup
 d = generate_distutils_setup(
     packages=['semantic_region_handler'],
     package_dir={'':'src'},
-    scripts=['scripts/circle_region_handler.py'],
+    scripts=['scripts/radius_region_handler.py',
+             'scripts/table_poller.py']
 #    requires=['actionlib','rospy_message_converter','world_msgs','worldlib']
 )
 

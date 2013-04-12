@@ -1,5 +1,5 @@
 <launch>
     <include file="$(find world_listeners)/launch/spatial_world_model.launch"/>
     <node pkg="semantic_region_handler" name="table_poller" type="table_poller.py"/>
-    <node pkg="semantic_region_handler" name="circle_region_handler" type="circle_region_handler.py"/>
+    <node pkg="semantic_region_handler" name="radius_region_handler" type="radius_region_handler.py"/>
 </launch>

@@ -1,3 +1,3 @@
 string name
 geometry_msgs/PoseWithCovarianceStamped pose_cov_stamped
-semantic_region_handler/Region region
+float32 radius
